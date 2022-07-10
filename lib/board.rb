@@ -13,6 +13,9 @@ class Board
   def initialize
     @atlas = set_board
   end
+  
+  # remove :atlas
+  attr_accessor :atlas
 
   # Set the board with created piece objects
   def set_board
@@ -40,16 +43,38 @@ class Board
     graphics = @atlas.dup
     graphics = graphics.map do |row|
       row.map do |cell|
-        cell.include?(:piece) ? c[:piece].utf.chr(Encoding::UTF_8) : c[:img]
+        cell.include?(:piece) ? cell[:piece].utf.chr(Encoding::UTF_8) : cell[:img]
       end
     end
-    puts %w[a b c d e f g h].join(' ').to_s
+    puts "  #{%w[a b c d e f g h].join(' ')}"
     graphics.each_with_index do |row, idx|
       puts "#{8 - idx} #{row.join(' ')} #{8 - idx}"
     end
-    puts %w[a b c d e f g h].join(' ').to_s
+    puts "  #{%w[a b c d e f g h].join(' ')}"
+  end
+
+  # human to computer chess notation
+  def notation(string)
+    # a4,d3
+    binding.pry
+    coor = string.chars 
+
+    p coor
+
+    l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
+               'f' => 5, 'g' => 6, 'h' => 7 }
+    [[l_hash[coor[0]], coor[1].to_i], [l_hash[coor[2]], coor[3].to_i]]
+    # @atlas[8 - number][l_hash[letter]]
+  end
+
+  def update(coor)
+    coor = notation(coor)
+    binding.pry
+    start = @atlas[axis[0][0]][axis[1][1]]
   end
 end
 
-hello = Board.new
-hello.display
+# hello = Board.new
+# binding.pry
+
+# hello.display
