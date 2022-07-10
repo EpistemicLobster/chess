@@ -6,4 +6,6 @@ class Bishop
     @moves = []
     @children = []
   end
+
+  attr_reader :utf
 end

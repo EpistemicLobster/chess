@@ -14,63 +14,42 @@ class Board
     @atlas = set_board
   end
 
-  attr_accessor :atlas
-
-  # Sets the board at to initiate a new game
+  # Set the board with created piece objects
   def set_board
-    # sets coordinates
-    pos = Array.new(8) { |o| Array.new(8) { |i| [[o, i]] } }
-    # sets square indicator
-    pos.map! { |i| i.map { |c| c << (c[0].reduce(:+) % 2 == 0 ? ['♢'] : ['♦']) } }
-    # creates and sets piece objects
-    pos[7].map!.each_with_index { |c, i| c[1] << SET[:row_one][i].new(c[0], 'b') }
-    pos[6].map!.each_with_index { |c, i| c[1] << SET[:row_two][i].new(c[0], 'b') }
-    pos[1].map!.each_with_index { |c, i| c[1] << SET[:row_seven][i].new(c[0], 'w') }
-    pos[0].map!.each_with_index { |c, i| c[1] << SET[:row_eight][i].new(c[0], 'w') }
-    pos
+    rows = blank_board
+    [7, 6, 1, 0].each do |num|
+      rows[num].each_with_index do |cell, idx|
+        cell[:piece] = SET[num][1][idx].new(cell[:pos], SET[num][0])
+      end
+    end
+    rows
+  end
+
+  # Create a blank board template array
+  def blank_board
+    rows = Array.new(8) { |o| Array.new(8) { |i| { pos: [o, i] } } }
+    rows.map! do |row|
+      row.each do |cell|
+        cell[:img] = cell[:pos].reduce(:+).even? ? '♢' : '♦'
+      end
+    end
+    rows
   end
 
   def display
-    # Set piece graphics in @atlas
-    g = board_graphics(@atlas)
-
-
-    puts <<~GUI
-      a b c d e f g h
-    8 #{g[0]} ♦ ♢ ♦ ♢ ♦ ♢ ♦ 8
-    7 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 7
-    6 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 6
-    5 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 5
-    4 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 4
-    3 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 3
-    2 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 2
-    1 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 1
-      a b c d e f g h
-    GUI
-    puts <<~GUI
-      a b c d e f g h
-    8 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 8
-    7 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 7
-    6 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 6
-    5 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 5
-    4 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 4
-    3 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 3
-    2 ♢ ♦ ♢ ♦ ♢ ♦ ♢ ♦ 2
-    1 ♦ ♢ ♦ ♢ ♦ ♢ ♦ ♢ 1
-      a b c d e f g h
-    GUI
-
-  end
-
-  # human to computer chess notation
-  def notation(letter, number)
-    l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
-               'f' => 5, 'g' => 6, 'h' => 7 }
-    @atlas[8 - number][l_hash[letter]]
+    graphics = @atlas.dup
+    graphics = graphics.map do |row|
+      row.map do |cell|
+        cell.include?(:piece) ? c[:piece].utf.chr(Encoding::UTF_8) : c[:img]
+      end
+    end
+    puts %w[a b c d e f g h].join(' ').to_s
+    graphics.each_with_index do |row, idx|
+      puts "#{8 - idx} #{row.join(' ')} #{8 - idx}"
+    end
+    puts %w[a b c d e f g h].join(' ').to_s
   end
 end
 
 hello = Board.new
-binding.pry
-
-p hello.notation('d', 8)
+hello.display

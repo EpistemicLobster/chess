@@ -6,4 +6,6 @@ class Knight
     @moves = []
     @children = []
   end
+
+  attr_reader :utf
 end

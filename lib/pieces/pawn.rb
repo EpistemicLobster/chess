@@ -7,6 +7,8 @@ class Pawn
     # @moves = generate_moves(location)
     @children = []
   end
+  
+  attr_accessor :utf
 
   MOVE_STD = [-1, 1]
   MOVE_FIRST = [[-1, 1], [-2, 0]]
