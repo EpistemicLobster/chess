@@ -24,6 +24,10 @@ class Game
     move = verify(gets.chomp)
     @board.update(move)
   end
+  
+  def move_generation
+
+  end
 
   def verify(move)
     move

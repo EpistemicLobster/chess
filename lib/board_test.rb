@@ -13,7 +13,7 @@ class Board
   def initialize
     @atlas = set_board
   end
-
+  
   # remove :atlas
   attr_accessor :atlas
 
@@ -21,8 +21,8 @@ class Board
   def set_board
     rows = blank_board
     [7, 6, 1, 0].each do |num|
-      rows[num].each_with_index do |cell, i|
-        cell[:piece] = SET[num][1][i].new(cell[:pos], SET[num][0])
+      rows[num].each_with_index do |cell, idx|
+        cell[:piece] = SET[num][1][idx].new(cell[:pos], SET[num][0])
       end
     end
     rows
@@ -40,15 +40,17 @@ class Board
   end
 
   def display
-    graph = @atlas.dup
-    graph = graph.map do |row|
+    graphics = @atlas.dup
+    graphics = graphics.map do |row|
       row.map do |cell|
         cell.include?(:piece) ? cell[:piece].utf.chr(Encoding::UTF_8) : cell[:img]
       end
     end
-    puts '   a b c d e f g'
-    graph.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
-    puts '   a b c d e f g'
+    puts "  #{%w[a b c d e f g h].join(' ')}"
+    graphics.each_with_index do |row, idx|
+      puts "#{8 - idx} #{row.join(' ')} #{8 - idx}"
+    end
+    puts "  #{%w[a b c d e f g h].join(' ')}"
   end
 
   # test_piece DELETE
@@ -62,13 +64,11 @@ class Board
     @atlas.each do |row|
       row.each do |cell|
         # binding.pry
-        next if cell[:piece].nil?
+        next unless [Bishop, Rook, Queen].any? { |e| cell[:piece].instance_of?(e) }
 
-        if [Bishop, Rook, Queen].any? { |e| cell[:piece].instance_of?(e) }
-          cell[:piece].moves = generate_moves(cell[:pos], cell[:piece].move_list)
-        else
-          cell[:piece].generate_moves
-        end
+        origin = cell[:pos]
+        transformations = cell[:piece].move_style
+        cell[:piece].moves = generate_moves(origin, transformations, atlas.dup)
       end
     end
   end
@@ -82,14 +82,25 @@ class Board
 
         moves << curr
 
-        break if piece_at(curr[0], curr[1])
+        break if @atlas[curr[0]][curr[1]].key?(:piece)
       end
     end
     moves
   end
 
-  def piece_at(row, column)
-    atlas[row][column][:piece]
+  def generate_moves(origin, queue, moves = [])
+    queue.each do |trans|
+      curr = origin
+      loop do
+        curr = [curr[0] + trans[0], curr[1] + trans [1]]
+        break if curr.any? { |e| e.negative? || e > 7 }
+
+        moves << curr
+        break if @atlas[curr[0]][curr[1]][:piece]
+        # atlas[0][1]
+      end
+    end
+    moves
   end
 
   # human to computer chess notation
@@ -114,7 +125,6 @@ class Board
 end
 
 hello = Board.new
-hello.display
 binding.pry
 hello.test_piece
 hello.moves

@@ -7,9 +7,13 @@ require_relative 'pieces/king'
 
 #contains additional information methods/constants
 module Reference
-  SET = { 7 => ['b', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]],
-          6 => ['b', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
-          1 => ['w', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
-          0 => ['w', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]] }
+  SET = { 0 => ['b', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]],
+          1 => ['b', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
+          6 => ['w', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
+          7 => ['w', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]] }.freeze
 
+  MOVES = { Bishop => [[1, 1], [-1, 1], [-1,-1], [1, -1]],
+            Rook => [[1, 0], [0, 1], [-1, 0], [0, -1]],
+            Queen => [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [0, -1]]
+  }.freeze
 end
