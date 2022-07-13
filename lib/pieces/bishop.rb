@@ -15,4 +15,5 @@ class Bishop
   def move_list
     MOVES
   end
+  
 end

@@ -40,14 +40,14 @@ class Board
   end
 
   def display
-    graph = @atlas.dup
-    graph = graph.map do |row|
+    transfer = @atlas.dup
+    transfer = transfer.map do |row|
       row.map do |cell|
         cell.include?(:piece) ? cell[:piece].utf.chr(Encoding::UTF_8) : cell[:img]
       end
     end
     puts '   a b c d e f g'
-    graph.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
+    transfer.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
     puts '   a b c d e f g'
   end
 
@@ -92,19 +92,13 @@ class Board
     atlas[row][column][:piece]
   end
 
-  # human to computer chess notation
-  def notation(string)
-    # a4,d3
-    binding.pry
-    coor = string.chars 
-
-    p coor
-
-    l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
-               'f' => 5, 'g' => 6, 'h' => 7 }
-    [[l_hash[coor[0]], coor[1].to_i], [l_hash[coor[2]], coor[3].to_i]]
-    # @atlas[8 - number][l_hash[letter]]
-  end
+# human to computer chess notation
+def notation(string)
+  coor = string.chars 
+  l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
+             'f' => 5, 'g' => 6, 'h' => 7 }
+  [[8 - coor[1].to_i, l_hash[coor[0]]], [8 - coor[3].to_i, l_hash[coor[2]]]]
+end
 
   def update(coor)
     coor = notation(coor)
@@ -112,6 +106,51 @@ class Board
     start = @atlas[axis[0][0]][axis[1][1]]
   end
 end
+
+# def verify(move, player)
+#   move = notation(move)
+#   move = notation(gets.chomp) until origin_valid?(move, player) == true
+#   move = notation(gets.chomp) until target_valid?(move) == true
+# end
+
+# def origin_valid?(loc, player)
+#   origin = @atlas[loc[0][0]][loc[0][1]]
+#   if origin[:piece].nil?
+#     puts ERROR_EMPTY_SPACE
+#     return false
+#   elsif origin[:piece].color != player.color
+#     puts ERROR_WRONG_PIECE
+#     return false
+#   end
+#   true
+# end
+
+# def target_valid?(loc)
+#   # binding.pry
+#   piece = atlas[loc[0][0]][loc[0][1]][:piece]
+#   transformation = [loc[1][0]-loc[0][0], loc[0][1] - loc[1][1]]
+#   target = loc[1]
+#   piece.moves.include?(transformation)
+#   # unless piece.include?(loc)
+#   #   puts "not a legal move"
+#   #   return false
+#   # end
+#   # verify_check
+# end
+
+# # verify_check
+
+
+
+# # create a new piece object and delete the old object
+# def update(loc)
+#   loc = notation(loc)
+#   piece = atlas[loc[0][0]][loc[0][1]][:piece]
+#   constr = [piece.class, piece.color]
+#   # binding.pry
+#   atlas[loc[1][0]][loc[1][1]][:piece] = constr[0].new(loc[1], constr[1])
+#   @atlas[loc[0][0]][loc[0][1]].delete(:piece)
+# end
 
 hello = Board.new
 hello.display
