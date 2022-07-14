@@ -102,7 +102,7 @@ class Game
     king = @board.find_piece(King, color)[:pos]
     @board.atlas.each do |row|
       row.each do |cell|
-        next if cell[:piece].nil? || cell[:piece].color == color
+        next if cell[:piece].nil? || cell[:piece].color == colort
 
         if cell[:piece].moves.include?(king)
           puts ERROR_PLAYER_IN_CHECK

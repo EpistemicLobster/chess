@@ -7,8 +7,7 @@ class Board
   include Reference
   include Message
   def initialize
-    @atlas = initiate_board
-    
+    @atlas = set_board
   end
 
   # remove :atlas
@@ -16,52 +15,73 @@ class Board
 
   def initiate_board
     @atlas = set_board
-    moves
-  end
-  # Set the board with created piece objects
-  def set_board
-    rows = blank_board
-    [7, 6, 1, 0].each do |num|
-      rows[num].each_with_index do |cell, i|
-        cell[:piece] = SET[num][1][i].new(cell[:pos], SET[num][0])
-      end
-    end
-    rows
   end
 
-  # Create a blank board template array
-  def blank_board
-    rows = Array.new(8) { |o| Array.new(8) { |i| { pos: [o, i] } } }
-    rows.map! do |row|
-      row.each do |cell|
-        cell[:img] = cell[:pos].reduce(:+).even? ? '♢' : '♦'
-      end
+  # Set the board with created piece objects
+  def set_board
+    board = blank_board
+    SET_NEW.each_pair do |key, value|
+      board[key][:piece] = value[0].new(value[1])
     end
-    rows
+    board
+  end
+
+  def cell_to_notation(cell)
+    dictionary = { 0 => 'a', 1 => 'b', 2 => 'c', 3 => 'd', 4 => 'e',
+                   5 => 'f', 6 => 'g', 7 => 'h'}
+    "#{dictionary[cell[1]]}#{8 - cell[0]}".to_sym
+  end
+
+  # Create a blank board template hash
+  def blank_board
+    coordinates = Array.new(8) { |o| Array.new(8) { |i| [o, i] } }
+    board = {}
+    coordinates.each do |row|
+      row.each { |cell| board[cell] = { not: cell_to_notation(cell) } }
+    end
+    board.each do |key, value|
+      # binding.pry
+      value[:icon] = key.reduce(:+).even? ? '♢' : '♦'
+    end
+    board
   end
 
   def display
-    transfer = @atlas.dup
-    transfer = transfer.map do |row|
+    # binding.pry
+    arr = Array.new(8) { |o| Array.new(8) { |i| [o, i] } }
+    arr = arr.map do |row|
       row.map do |cell|
-        cell.include?(:piece) ? cell[:piece].utf.chr(Encoding::UTF_8) : cell[:img]
+        if atlas[cell][:piece].nil?
+          atlas[cell][:icon]
+        else
+          atlas[cell][:piece].utf.chr(Encoding::UTF_8)
+        end
       end
     end
     puts '  a b c d e f g h'
-    transfer.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
+    arr.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
     puts '  a b c d e f g h'
   end
 
-  def find_piece(target_class, color)
-    item_row = @atlas.find do |row|
-      row.find do |cell|
-        cell[:piece].instance_of?(target_class) && cell[:piece].color == color
-      end
+  def moves
+    @atlas.each do |key, value|
+      next if value[:piece].nil?
+
+      value[:piece].generate_moves(key, @atlas.dup)
     end
-    item_row.find do |cell|
-      cell[:piece].instance_of?(target_class) && cell[:piece].color == color
-    end
+    binding.pry
   end
+
+  # def find_piece(target_class, color)
+  #   item_row = @atlas.find do |row|
+  #     row.find do |cell|
+  #       cell[:piece].instance_of?(target_class) && cell[:piece].color == color
+  #     end
+  #   end
+  #   item_row.find do |cell|
+  #     cell[:piece].instance_of?(target_class) && cell[:piece].color == color
+  #   end
+  # end
 
   # test_piece DELETE
   # def test_piece
@@ -70,39 +90,8 @@ class Board
   # end
 
   # generates moves for each piece on call
-  def moves
-    @atlas.each do |row|
-      row.each do |cell|
-        # binding.pry
-        next if cell[:piece].nil?
 
-        if [Bishop, Rook, Queen].any? { |e| cell[:piece].instance_of?(e) }
-          cell[:piece].moves = generate_moves(cell[:pos], cell[:piece].move_list)
-        else
-          cell[:piece].generate_moves
-        end
-      end
-    end
-  end
 
-  def generate_moves(origin, queue, moves = [])
-    queue.each do |trans|
-      curr = origin
-      loop do
-        curr = [curr[0] + trans[0], curr[1] + trans [1]]
-        break if curr.any? { |e| e.negative? || e > 7 }
-
-        moves << curr
-
-        break if piece_at(curr)
-      end
-    end
-    moves
-  end
-
-  # def cell_at(loc)
-  #   atlas[loc[0]][loc[1]]
-  # end
 
   def piece_at(loc)
     atlas[loc[0]][loc[1]][:piece]
@@ -193,6 +182,7 @@ end
 
 hello = Board.new
 hello.display
+hello.moves
 # hello.test_piece
 # # test origin
 # hello.moves
