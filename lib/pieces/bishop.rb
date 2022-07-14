@@ -8,7 +8,7 @@ class Bishop
   end
 
   attr_reader :location, :color, :utf
-  attr_writer :moves
+  attr_accessor :moves
 
   MOVES = [[1, 1], [-1, 1], [-1, -1], [1, -1]].freeze
 

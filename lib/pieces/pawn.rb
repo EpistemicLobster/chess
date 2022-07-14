@@ -7,7 +7,7 @@ class Pawn
     @moves = []
   end
 
-  attr_reader :location, :color, :utf
+  attr_reader :location, :color, :utf, :moves
 
   FIRST_BLACK = [[2, 0], [1, 0], [1, 1], [1, -1]].freeze
   STD_BLACK = [[1, 0], [1, 1], [1, -1]].freeze

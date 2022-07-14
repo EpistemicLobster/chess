@@ -7,7 +7,7 @@ class Knight
     @moves = []
   end
 
-  attr_reader :location, :color, :utf
+  attr_reader :location, :color, :utf, :moves
 
   MOVES = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]].freeze
 

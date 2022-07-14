@@ -7,7 +7,7 @@ class King
     @moves = []
   end
 
-  attr_reader :location, :color, :utf
+  attr_reader :location, :color, :utf, :moves
 
   MOVES = [[1, 0], [0, 1], [-1, 0], [0, -1]].freeze
 

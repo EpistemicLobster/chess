@@ -12,6 +12,13 @@ module Reference
           6 => ['w', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
           7 => ['w', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]] }.freeze
 
+  # For board.rb piece creation
+  PIECE = { Rook: Rook, Knight: Knight, Bishop: Bishop,
+            King: King, Queen: Queen, Pawn: Pawn }.freeze
+
+
+
+
   MOVES = { Bishop => [[1, 1], [-1, 1], [-1,-1], [1, -1]],
             Rook => [[1, 0], [0, 1], [-1, 0], [0, -1]],
             Queen => [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [0, -1]]

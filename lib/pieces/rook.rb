@@ -8,7 +8,7 @@ class Rook
   end
 
   attr_reader :location, :utf, :color
-  attr_writer :moves
+  attr_accessor :moves
 
   MOVES = [[1, 0], [0, 1], [-1, 0], [0, -1]].freeze
 
