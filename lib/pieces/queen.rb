@@ -12,8 +12,10 @@ class Queen
   MOVES = [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [0, -1]].freeze
 
   def generate_moves(origin, atlas)
+    @moves = []
     norm_moves(origin, atlas)
     capture_moves(atlas)
+    self
   end
 
   def norm_moves(origin, atlas)

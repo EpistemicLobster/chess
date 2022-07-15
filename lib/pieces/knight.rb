@@ -11,8 +11,10 @@ class Knight
   MOVES = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]].freeze
 
   def generate_moves(origin, atlas)
+    @moves = []
     norm_moves(origin)
     capture_moves(atlas)
+    self
   end
 
   def norm_moves(origin)

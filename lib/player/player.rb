@@ -5,5 +5,5 @@ class Player
     @move = nil
   end
 
-  attr_reader :color
+  attr_reader :color, :name
 end

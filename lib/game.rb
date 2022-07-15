@@ -1,7 +1,6 @@
 require 'pry-byebug'
 require_relative 'board'
 require_relative 'player/player'
-require_relative 'player/message'
 # Game engine
 # Implement Rules between pieces, capture, check, check-mate, invalid
 # Implement General Game Loop
@@ -16,36 +15,23 @@ class Game
 
   attr_accessor :board, :player_one
 
-  # def loop
-  #   make_move
-  # end
+  def main_loop
+    i = 0
+    # until @board.check_mate? == true
+    until i == 10
+      binding.pry
+      @board.display
+      make_move
+      @current_player = @current_player == @player_one ? @player_two : @player_one
+      i += 1
+    end
+  end
 
-  # def make_move
-  #   puts 'Please make a move: '
-  #   move = verify
-  #   @board.update(move)
-  # end
-
-
-  # def verify(move)
-  #   until move.match?(/^[a-h][1-8][a-h][1-8]$/)
-      
-  #     move = gets.chomp
-  #   end
-  #   unless @board.origin_valid?(move, @current_player)
-  #   @board.target_valid(move, @current_player)
-  # end
-
-  # def verify(move)
-  #   syntax = syntax?(move)
-  #   origin_valid = @board.origin_valid?(move, @current_player.color)
-  #   target_valid = @board.target_valid?(move, @current_player.color)
-  #   move = gets.chomp until syntax && origin_valid && target_valid
-  # end
-
-
-
-  # attempt to move all piece verification logic to game.rb
+  def make_move
+    puts "#{@current_player.name} please make a move: "
+    move = verify
+    @board.make_move(move[0], move[1])
+  end
 
   def notation(string)
     coor = string.chars
@@ -64,7 +50,7 @@ class Game
       b = notation(move)[1]
       break if @board.origin?(a, c) && @board.target?(a, b, c)
     end
-    p [a, b]
+    [a, b]
   end
 
   def syntax_check(move)
@@ -76,86 +62,14 @@ class Game
     end
     move
   end
-
-  # def is_origin_valid?(loc, color)
-  #   if @atlas.dig(loc, piece).nil?
-  #     puts ERROR_EMPTY_SPACE
-  #     return false
-  #   elsif @atlas.dig(loc, piece, color) != color
-  #     puts ERROR_WRONG_PIECE
-  #     return false
-  #   end
-  # end
-
-  # old attempt
-
-  # def verify(move, a = move[0, 2], b = move[2, 3])
-  #   # color = @current_player.color
-  #   # binding.pry
-  #   a = notation(a)
-  #   b = notation(b)
-  #   origin = @board.atlas.dig(a[0], a[1])
-  #   target = @board.atlas.dig(b[0], b[1])
-  #   c = @current_player.color
-  #   until syntax?(move) && origin_valid?(origin, c) && target_valid?(origin, target, c)
-  #     move = gets.chomp
-  #     a = move[0, 2]
-  #     b = move[2, 3]
-  #   end
-  # end
-
-
-
-  # def notation(coor)
-  #   letter = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
-  #              'f' => 5, 'g' => 6, 'h' => 7 }
-  #   [8 - coor[1].to_i, letter[coor[0]]]
-  # end
-
-  # def origin_valid?(origin, color)
-  #   # binding.pry
-  #   piece = origin[:piece]
-  #   if piece.nil?
-  #     puts ERROR_EMPTY_SPACE
-  #     return false
-  #   elsif piece.color != color
-  #     puts ERROR_WRONG_PIECE
-  #     return false
-  #   end
-  #   p true
-  # end
-
-  # def target_valid?(origin, target, color)
-  #   if origin[:piece].moves.none?(target[:pos])
-  #     puts ERROR_PIECE_INVALID
-  #     return false
-  #   elsif !target[:piece].nil? && target[:piece].color == color
-  #     puts ERROR_WRONG_PIECE
-  #     return false
-  #   elsif check?(color)
-  #     return false
-  #   end
-  #   true
-  # end
-
-  # def check?(color)
-  #   king = @board.find_piece(King, color)[:pos]
-  #   @board.atlas.each do |row|
-  #     row.each do |cell|
-  #       next if cell[:piece].nil? || cell[:piece].color == colort
-
-  #       if cell[:piece].moves.include?(king)
-  #         puts ERROR_PLAYER_IN_CHECK
-  #         return true
-  #       end
-  #     end
-  #   end
-  #   false
-  # end
-
-
 end
 
 
 game = Game.new
-game.verify
+game.main_loop
+# game.board.make_move([6, 0], [4, 0])
+# game.board.display
+# game.board.make_move([4, 0], [3, 0])
+# game.board.display
+# game.board.make_move([3, 0], [2, 0])
+# game.board.display

@@ -9,16 +9,17 @@ class Pawn
     @moves = []
   end
 
-  attr_reader :color, :utf, :moves
+  attr_accessor :color, :utf, :moves, :move_types
 
   BLACK = { norm: [[1, 0], [2, 0]], capture: [[1, 1], [1, -1]] }.freeze
   WHITE = { norm: [[-1, 0], [-2, 0]], capture: [[-1, -1], [-1, 1]] }.freeze
 
   def generate_moves(origin, atlas)
-    x = hereditary_moves(origin)
+    # binding.pry unless atlas[[5, 2]][:piece].nil? && color == 'b'
     @move_types = hereditary_moves(origin)
     @moves = norm_moves(origin, atlas)
     capture_moves(@move_types[:capture], origin, atlas)
+    self
   end
 
   # identifies correct move_types for position and color
@@ -37,6 +38,7 @@ class Pawn
 
   # adds valid normal moves
   def norm_moves(origin, atlas)
+    # binding.pry unless atlas[[4, 0]][:piece].nil? && color == 'b'
     norm = []
     @move_types[:norm].each do |move|
       curr = [origin[0] + move[0], origin[1] + move[1]]
@@ -49,6 +51,7 @@ class Pawn
   # adds valid capture moves
   def capture_moves(capture, origin, atlas)
     capture.each do |move|
+      # binding.pry unless atlas[[4, 0]][:piece].nil? && color == 'b'
       curr = [origin[0] + move[0], origin[1] + move[1]]
       if curr.all? { |coor| coor.between?(0, 7) }
         if atlas.dig(curr, :piece).nil?

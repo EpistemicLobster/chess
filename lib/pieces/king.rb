@@ -13,6 +13,7 @@ class King
   def generate_moves(origin, atlas)
     norm_moves(origin)
     capture_moves(atlas)
+    self
   end
 
   def norm_moves(origin)

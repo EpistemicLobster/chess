@@ -8,10 +8,12 @@ class Board
   include Message
   def initialize
     @atlas = initiate_board
+    @check = false
     @check_mate = false
   end
 
   # remove :atlas
+  attr_reader :check, :check_mate
   attr_accessor :atlas
 
   def initiate_board
@@ -66,6 +68,8 @@ class Board
 
   def generate_moves
     @atlas.each do |key, value|
+      # binding.pry
+      # binding.pry unless atlas[[4, 0]][:piece].nil?
       next if value[:piece].nil?
 
       value[:piece].generate_moves(key, @atlas.dup)
@@ -88,7 +92,7 @@ class Board
       puts ERROR_PIECE_INVALID
       return false
     elsif check?(origin, target, color)
-      check_mate?(origin, color)
+      @check_mate = check_mate?(origin, color)
       puts ERROR_PLAYER_IN_CHECK
       return false
     end
@@ -102,11 +106,12 @@ class Board
   end
 
   def check?(origin, target, color)
+    # binding.pry
     make_move(origin, target)
     king_loc = find_piece(King, color).keys[0]
     boolean = @atlas.any? do |_key, value|
       next if value[:piece].nil?
-      
+
       value[:piece].moves.include?(king_loc)
     end
     make_move(target, origin)
@@ -120,6 +125,7 @@ class Board
     generate_moves
   end
 
+  # untested
   def check_mate?(origin, color)
     @atlas.any? do |_key, value|
       next if value[:piece].nil? || value[:piece].color != color
@@ -132,9 +138,17 @@ class Board
 end
 
 
-# hello = Board.new
+hello = Board.new
 # hello.display
-# hello.make_move([7, 3], [2, 5])
+# hello.make_move([6, 0], [4, 0])
+# hello.display
+# hello.make_move([4, 0], [3, 0])
+# hello.display
+# hello.make_move([3, 0], [2, 0])
+# hello.display
+hello.check?([6, 0], [4, 0], 'w')
+# hello.display
+# binding.pry
 # hello.display
 # binding.pry
 # p hello.target?([6, 0], [5, 0], 'w')
