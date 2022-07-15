@@ -7,7 +7,8 @@ class Board
   include Reference
   include Message
   def initialize
-    @atlas = set_board
+    @atlas = initiate_board
+    @check_mate = false
   end
 
   # remove :atlas
@@ -15,6 +16,8 @@ class Board
 
   def initiate_board
     @atlas = set_board
+    generate_moves
+    atlas
   end
 
   # Set the board with created piece objects
@@ -26,28 +29,26 @@ class Board
     board
   end
 
-  def cell_to_notation(cell)
-    dictionary = { 0 => 'a', 1 => 'b', 2 => 'c', 3 => 'd', 4 => 'e',
-                   5 => 'f', 6 => 'g', 7 => 'h'}
-    "#{dictionary[cell[1]]}#{8 - cell[0]}".to_sym
-  end
+  # def cell_to_notation(cell)
+  #   dictionary = { 0 => 'a', 1 => 'b', 2 => 'c', 3 => 'd', 4 => 'e',
+  #                  5 => 'f', 6 => 'g', 7 => 'h'}
+  #   "#{dictionary[cell[1]]}#{8 - cell[0]}".to_sym
+  # end
 
   # Create a blank board template hash
   def blank_board
     coordinates = Array.new(8) { |o| Array.new(8) { |i| [o, i] } }
     board = {}
     coordinates.each do |row|
-      row.each { |cell| board[cell] = { not: cell_to_notation(cell) } }
+      row.each { |cell| board[cell] = {} }
     end
     board.each do |key, value|
-      # binding.pry
       value[:icon] = key.reduce(:+).even? ? '♢' : '♦'
     end
     board
   end
 
   def display
-    # binding.pry
     arr = Array.new(8) { |o| Array.new(8) { |i| [o, i] } }
     arr = arr.map do |row|
       row.map do |cell|
@@ -63,132 +64,79 @@ class Board
     puts '  a b c d e f g h'
   end
 
-  def moves
+  def generate_moves
     @atlas.each do |key, value|
       next if value[:piece].nil?
 
       value[:piece].generate_moves(key, @atlas.dup)
     end
-    binding.pry
   end
 
-  # def find_piece(target_class, color)
-  #   item_row = @atlas.find do |row|
-  #     row.find do |cell|
-  #       cell[:piece].instance_of?(target_class) && cell[:piece].color == color
-  #     end
-  #   end
-  #   item_row.find do |cell|
-  #     cell[:piece].instance_of?(target_class) && cell[:piece].color == color
-  #   end
-  # end
-
-  # test_piece DELETE
-  # def test_piece
-  #   @atlas[4][4][:piece] = Bishop.new([4, 4], 'w')
-  #   @atlas[3][3][:piece] = Queen.new([3, 3], 'w')
-  # end
-
-  # generates moves for each piece on call
-
-
-
-  def piece_at(loc)
-    atlas[loc[0]][loc[1]][:piece]
-  end
-
-  def origin_valid?(move, color)
-    loc = notation(move)
-    origin = piece_at(loc[0])
-    if origin.nil?
+  def origin?(origin, color)
+    if @atlas.dig(origin, :piece).nil?
       puts ERROR_EMPTY_SPACE
       return false
-    elsif origin.color != color
+    elsif @atlas.dig(origin, :piece).color != color
       puts ERROR_WRONG_PIECE
       return false
     end
     true
   end
 
-  # consider reworking
-  def target_valid?(move, color)
-    binding.pry
-    loc = notation(move)
-    if piece_at(loc[0]).moves.none?(loc[1]) || piece_at(loc[1]).color == color
+  def target?(origin, target, color)
+    if atlas.dig(origin, :piece).moves.none?(target)
       puts ERROR_PIECE_INVALID
       return false
-    elsif check?(color)
+    elsif check?(origin, target, color)
+      check_mate?(origin, color)
       puts ERROR_PLAYER_IN_CHECK
       return false
     end
     true
   end
 
-  # consider reworking
-  # def target_valid(origin, target, color)
-  #   if origin[:piece].moves.none?(target)
-  #     puts ERROR_PIECE_INVALID
-  #     false
-  #   elsif target[:piece].color == color
-  #     puts PLAYER_INVALID_MOVE
-  #     false
-  #   elsif check?(player.color)
-  #     puts PLAYER_IN_CHECK
-  #     false
-  #   end
-  #   true
-  # end
-
-  def check?(color)
-    king = @atlas.find_piece(King, color).location
-    @atlas.each do |row|
-      row.each do |cell|
-        next if cell[:piece].nil? || cell[:piece].color == color
-
-        return true if cell[:piece].moves.include?(king)
-      end
+  def find_piece(class_name, color)
+    @atlas.select do |_key, value|
+      value[:piece].instance_of?(class_name) && value[:piece].color == color
     end
   end
 
-  def check_mate?(king)
-    king.moves.each
+  def check?(origin, target, color)
+    make_move(origin, target)
+    king_loc = find_piece(King, color).keys[0]
+    boolean = @atlas.any? do |_key, value|
+      next if value[:piece].nil?
+      
+      value[:piece].moves.include?(king_loc)
+    end
+    make_move(target, origin)
+    boolean
   end
 
-
-  # human to computer chess notation
-  def notation(string)
-    coor = string.chars
-    l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
-               'f' => 5, 'g' => 6, 'h' => 7 }
-    [[8 - coor[1].to_i, l_hash[coor[0]]], [8 - coor[3].to_i, l_hash[coor[2]]]]
+  def make_move(origin, target)
+    piece_copy = @atlas.dig(origin, :piece)
+    @atlas[origin].delete(:piece)
+    @atlas[target][:piece] = piece_copy
+    generate_moves
   end
 
-  def update(coor)
-    coor = notatwion(coor)
-    binding.pry
-    start = @atlas[axis[0][0]][axis[1][1]]
+  def check_mate?(origin, color)
+    @atlas.any? do |_key, value|
+      next if value[:piece].nil? || value[:piece].color != color
+
+      value[:piece].moves.any? do |move|
+        !check?(origin, move)
+      end
+    end
   end
 end
 
-# # create a new piece object and delete the old object
-# def update(loc)
-#   loc = notation(loc)
-#   piece = atlas[loc[0][0]][loc[0][1]][:piece]
-#   constr = [piece.class, piece.color]
-#   # binding.pry
-#   atlas[loc[1][0]][loc[1][1]][:piece] = constr[0].new(loc[1], constr[1])
-#   @atlas[loc[0][0]][loc[0][1]].delete(:piece)
-# end
 
-hello = Board.new
-hello.display
-hello.moves
-# hello.test_piece
-# # test origin
-# hello.moves
-# hello.origin_valid?('a2a3', 'w')
-# # test target
-# hello.target_valid?('b2b3', 'w')
+# hello = Board.new
+# hello.display
+# hello.make_move([7, 3], [2, 5])
+# hello.display
 # binding.pry
-
+# p hello.target?([6, 0], [5, 0], 'w')
+# binding.pry
 # hello.display

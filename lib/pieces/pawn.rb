@@ -1,44 +1,62 @@
+require 'pry-byebug'
+
 # Creates a chess pawn
-class Pawn 
+class Pawn
   def initialize(color)
     @color = color
     @utf = color == 'w' ? 9817 : 9823
+    @move_types = nil
     @moves = []
   end
 
   attr_reader :color, :utf, :moves
 
-  FIRST_BLACK = [[2, 0], [1, 0], [1, 1], [1, -1]].freeze
-  STD_BLACK = [[1, 0], [1, 1], [1, -1]].freeze
-  FIRST_WHITE = [[-2, 0], [-1, 0], [-1, -1], [-1, 1]].freeze
-  STD_WHITE = [[-1, 0], [-1, -1], [-1, 1]].freeze
+  BLACK = { norm: [[1, 0], [2, 0]], capture: [[1, 1], [1, -1]] }.freeze
+  WHITE = { norm: [[-1, 0], [-2, 0]], capture: [[-1, -1], [-1, 1]] }.freeze
 
-  def generate_moves(origin, _atlas)
-    @moves = hereditary_moves(origin)
-    @moves = prune_moves(origin)
+  def generate_moves(origin, atlas)
+    x = hereditary_moves(origin)
+    @move_types = hereditary_moves(origin)
+    @moves = norm_moves(origin, atlas)
+    capture_moves(@move_types[:capture], origin, atlas)
   end
 
+  # identifies correct move_types for position and color
   def hereditary_moves(origin)
+    white = WHITE.dup
+    black = BLACK.dup
     case @utf
     when 9817
-      origin[0] == 6 ? FIRST_WHITE : STD_WHITE
+      origin[0] == 6 ? white : white[:norm].pop
+      white
     when 9823
-      origin[0] == 1 ? FIRST_BLACK : STD_BLACK
+      origin[0] == 1 ? black : black[:norm].pop
+      black
     end
   end
 
-  def prune_moves(origin)
-    updated_moves = []
-    @moves.map do |move|
-      new_coord = [origin[0] + move[0], origin[1] + move[1]]
-      updated_moves << new_coord unless new_coord.any? { |c| c.negative? || c > 7 }
+  # adds valid normal moves
+  def norm_moves(origin, atlas)
+    norm = []
+    @move_types[:norm].each do |move|
+      curr = [origin[0] + move[0], origin[1] + move[1]]
+      # binding.pry if curr == [3, 5]
+      norm << curr unless atlas[curr].key?(:piece)
     end
-    @moves = updated_moves
+    norm
   end
 
-  # Updates moves and location// FROM BOARD ?
-  def update_moves(new_location, board_state)
-    @location = new_location
-    @moves = legal_moves
+  # adds valid capture moves
+  def capture_moves(capture, origin, atlas)
+    capture.each do |move|
+      curr = [origin[0] + move[0], origin[1] + move[1]]
+      if curr.all? { |coor| coor.between?(0, 7) }
+        if atlas.dig(curr, :piece).nil?
+          move
+        elsif atlas.dig(curr, :piece).color != color
+          @moves << curr
+        end
+      end
+    end
   end
 end

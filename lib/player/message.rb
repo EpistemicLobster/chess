@@ -8,6 +8,6 @@ module Message
                  "Use board notation to denote start & end positions.\n" \
                  'Examples: a2b3, h4h3, c1c5... etc: '.freeze
   ERROR_PIECE_INVALID = 'Sorry that move is invalid, please try again: '.freeze
-  ERROR_PLAYER_IN_CHECK = "Sorry that move is invalid, it puts you in check.\n" \
+  ERROR_PLAYER_IN_CHECK = "Sorry that move is invalid, your King is in check.\n" \
                           'Please try again: '.freeze
 end

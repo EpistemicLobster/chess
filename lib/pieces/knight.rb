@@ -6,16 +6,29 @@ class Knight
     @moves = []
   end
 
-  attr_reader :location, :utf, :moves
+  attr_reader :location, :utf, :moves, :color
 
   MOVES = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]].freeze
 
-  def generate_moves(origin, _atlas)
-    updated_moves = []
+  def generate_moves(origin, atlas)
+    norm_moves(origin)
+    capture_moves(atlas)
+  end
+
+  def norm_moves(origin)
     MOVES.each do |move|
-      new_coord = [origin[0] + move[0], origin[1] + move[1]]
-      updated_moves << new_coord unless new_coord.any? { |c| c.negative? || c > 7 }
+      curr = [origin[0] + move[0], origin[1] + move[1]]
+      @moves << curr if curr.all? { |coor| coor.between?(0, 7) }
     end
-    @moves = updated_moves
+  end
+
+  def capture_moves(atlas)
+    @moves.keep_if do |move|
+      if atlas.dig(move, :piece).nil?
+        true
+      else
+        atlas.dig(move, :piece).color != color
+      end
+    end
   end
 end

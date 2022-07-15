@@ -11,22 +11,32 @@ class Rook
 
   MOVES = [[1, 0], [0, 1], [-1, 0], [0, -1]].freeze
 
-  def move_list
-    MOVES
+  def generate_moves(origin, atlas)
+    norm_moves(origin, atlas)
+    capture_moves(atlas)
   end
 
-  def generate_moves(origin, atlas, upd_moves = [])
-    MOVES.each do |trans|
+  def norm_moves(origin, atlas)
+    MOVES.each do |move|
       curr = origin
       loop do
-        curr = [curr[0] + trans[0], curr[1] + trans [1]]
-        break if curr.any? { |e| e.negative? || e > 7 }
+        # binding.pry
+        curr = [curr[0] + move[0], curr[1] + move[1]]
+        break unless curr.all? { |coor| coor.between?(0, 7) }
 
-        upd_moves << curr
-
+        @moves << curr
         break if atlas[curr][:piece]
       end
     end
-    @moves = upd_moves
+  end
+
+  def capture_moves(atlas)
+    @moves.keep_if do |move|
+      if atlas.dig(move, :piece).nil?
+        true
+      else
+        atlas.dig(move, :piece).color != color
+      end
+    end
   end
 end

@@ -16,19 +16,16 @@ class Game
 
   attr_accessor :board, :player_one
 
-  def loop
-    make_move
-  end
+  # def loop
+  #   make_move
+  # end
 
-  def make_move
-    puts 'Please make a move: '
-    move = verify(gets.chomp)
-    @board.update(move)
-  end
-  
-  def move_generation
+  # def make_move
+  #   puts 'Please make a move: '
+  #   move = verify
+  #   @board.update(move)
+  # end
 
-  end
 
   # def verify(move)
   #   until move.match?(/^[a-h][1-8][a-h][1-8]$/)
@@ -50,80 +47,115 @@ class Game
 
   # attempt to move all piece verification logic to game.rb
 
-
-  def verify(move, a = move[0, 2], b = move[2, 3])
-    # color = @current_player.color
-    # binding.pry
-    a = notation(a)
-    b = notation(b)
-    origin = @board.atlas.dig(a[0], a[1])
-    target = @board.atlas.dig(b[0], b[1])
-    c = @current_player.color
-    until syntax?(move) && origin_valid?(origin, c) && target_valid?(origin, target, c)
-      move = gets.chomp
-      a = move[0, 2]
-      b = move[2, 3]
-    end
-  end
-
-  def notation(coor)
-    letter = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
+  def notation(string)
+    coor = string.chars
+    l_hash = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
                'f' => 5, 'g' => 6, 'h' => 7 }
-    [8 - coor[1].to_i, letter[coor[0]]]
+    [[8 - coor[1].to_i, l_hash[coor[0]]], [8 - coor[3].to_i, l_hash[coor[2]]]]
   end
 
-  def origin_valid?(origin, color)
-    # binding.pry
-    piece = origin[:piece]
-    if piece.nil?
-      puts ERROR_EMPTY_SPACE
-      return false
-    elsif piece.color != color
-      puts ERROR_WRONG_PIECE
-      return false
+  def verify
+    a = nil
+    b = nil
+    c = @current_player.color
+    loop do
+      move = syntax_check(gets.chomp)
+      a = notation(move)[0]
+      b = notation(move)[1]
+      break if @board.origin?(a, c) && @board.target?(a, b, c)
     end
-    p true
+    p [a, b]
   end
 
-  def target_valid?(origin, target, color)
-    if origin[:piece].moves.none?(target[:pos])
-      puts ERROR_PIECE_INVALID
-      return false
-    elsif !target[:piece].nil? && target[:piece].color == color
-      puts ERROR_WRONG_PIECE
-      return false
-    elsif check?(color)
-      return false
-    end
-    true
-  end
-
-  def check?(color)
-    king = @board.find_piece(King, color)[:pos]
-    @board.atlas.each do |row|
-      row.each do |cell|
-        next if cell[:piece].nil? || cell[:piece].color == colort
-
-        if cell[:piece].moves.include?(king)
-          puts ERROR_PLAYER_IN_CHECK
-          return true
-        end
-      end
-    end
-    false
-  end
-
-  def syntax?(move)
-    unless move.match?(/^[a-h][1-8][a-h][1-8]$/)
+  def syntax_check(move)
+    until move.match?(/^[a-h][1-8][a-h][1-8]$/)
       puts "Input Error! \n" \
             "Use board notation to denote start & end positions.\n" \
             'Examples: a2b3, h4h3, c1c5... etc: '
-      false
+      move = gets.chomp
     end
-    true
+    move
   end
+
+  # def is_origin_valid?(loc, color)
+  #   if @atlas.dig(loc, piece).nil?
+  #     puts ERROR_EMPTY_SPACE
+  #     return false
+  #   elsif @atlas.dig(loc, piece, color) != color
+  #     puts ERROR_WRONG_PIECE
+  #     return false
+  #   end
+  # end
+
+  # old attempt
+
+  # def verify(move, a = move[0, 2], b = move[2, 3])
+  #   # color = @current_player.color
+  #   # binding.pry
+  #   a = notation(a)
+  #   b = notation(b)
+  #   origin = @board.atlas.dig(a[0], a[1])
+  #   target = @board.atlas.dig(b[0], b[1])
+  #   c = @current_player.color
+  #   until syntax?(move) && origin_valid?(origin, c) && target_valid?(origin, target, c)
+  #     move = gets.chomp
+  #     a = move[0, 2]
+  #     b = move[2, 3]
+  #   end
+  # end
+
+
+
+  # def notation(coor)
+  #   letter = { 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4,
+  #              'f' => 5, 'g' => 6, 'h' => 7 }
+  #   [8 - coor[1].to_i, letter[coor[0]]]
+  # end
+
+  # def origin_valid?(origin, color)
+  #   # binding.pry
+  #   piece = origin[:piece]
+  #   if piece.nil?
+  #     puts ERROR_EMPTY_SPACE
+  #     return false
+  #   elsif piece.color != color
+  #     puts ERROR_WRONG_PIECE
+  #     return false
+  #   end
+  #   p true
+  # end
+
+  # def target_valid?(origin, target, color)
+  #   if origin[:piece].moves.none?(target[:pos])
+  #     puts ERROR_PIECE_INVALID
+  #     return false
+  #   elsif !target[:piece].nil? && target[:piece].color == color
+  #     puts ERROR_WRONG_PIECE
+  #     return false
+  #   elsif check?(color)
+  #     return false
+  #   end
+  #   true
+  # end
+
+  # def check?(color)
+  #   king = @board.find_piece(King, color)[:pos]
+  #   @board.atlas.each do |row|
+  #     row.each do |cell|
+  #       next if cell[:piece].nil? || cell[:piece].color == colort
+
+  #       if cell[:piece].moves.include?(king)
+  #         puts ERROR_PLAYER_IN_CHECK
+  #         return true
+  #       end
+  #     end
+  #   end
+  #   false
+  # end
+
+
 end
 
 
 game = Game.new
-game.verify('a2a3')
+game.verify
