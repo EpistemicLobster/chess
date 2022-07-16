@@ -2,7 +2,7 @@
 class King
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9812 : 9818
+    @utf = color == 'white' ? 9812 : 9818
     @moves = []
   end
 
@@ -13,7 +13,6 @@ class King
   def generate_moves(origin, atlas)
     norm_moves(origin)
     capture_moves(atlas)
-    self
   end
 
   def norm_moves(origin)

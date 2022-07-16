@@ -2,7 +2,7 @@
 class Bishop
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9815 : 9821
+    @utf = color == 'white' ? 9815 : 9821
     @moves = []
   end
 
@@ -15,7 +15,6 @@ class Bishop
     @moves = []
     norm_moves(origin, atlas)
     capture_moves(atlas)
-    self
   end
 
   def norm_moves(origin, atlas)

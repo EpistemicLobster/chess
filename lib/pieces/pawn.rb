@@ -4,62 +4,52 @@ require 'pry-byebug'
 class Pawn
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9817 : 9823
-    @move_types = nil
+    @utf = color == 'white' ? 9817 : 9823
     @moves = []
   end
 
   attr_accessor :color, :utf, :moves, :move_types
 
-  BLACK = { norm: [[1, 0], [2, 0]], capture: [[1, 1], [1, -1]] }.freeze
-  WHITE = { norm: [[-1, 0], [-2, 0]], capture: [[-1, -1], [-1, 1]] }.freeze
+  # change symbols to strings?
+  MOVES = { 'black' => { first: [[1, 0], [2, 0]], norm: [[1, 0]],
+                         capture: [[1, 1], [1, -1]] },
+            'white' => { first: [[-1, 0], [-2, 0]], norm: [[-1, 0]],
+                         capture: [[-1, -1], [-1, 1]] } }.freeze
 
   def generate_moves(origin, atlas)
-    # binding.pry unless atlas[[5, 2]][:piece].nil? && color == 'b'
-    @move_types = hereditary_moves(origin)
-    @moves = norm_moves(origin, atlas)
-    capture_moves(@move_types[:capture], origin, atlas)
-    self
+    move_list = determine_move_list(origin)
+    sum_move = proc { |x, y| [x[0] + y[0], x[1] + y[1]] }
+    @moves = add_standard_moves(move_list, sum_move, origin, atlas)
+    add_capture_moves(sum_move, origin, atlas)
   end
 
-  # identifies correct move_types for position and color
-  def hereditary_moves(origin)
-    white = WHITE.dup
-    black = BLACK.dup
-    case @utf
-    when 9817
-      origin[0] == 6 ? white : white[:norm].pop
-      white
-    when 9823
-      origin[0] == 1 ? black : black[:norm].pop
-      black
+  def determine_move_list(origin)
+    # identifies whether piece is at starting row
+    # binding.pry
+    if [6, 1].include?(origin[0])
+      MOVES.dig(@color, :first).dup
+    else
+      MOVES.dig(@color, :norm).dup
     end
   end
 
   # adds valid normal moves
-  def norm_moves(origin, atlas)
-    # binding.pry unless atlas[[4, 0]][:piece].nil? && color == 'b'
+  def add_standard_moves(move_list, sum_move, origin, atlas)
     norm = []
-    @move_types[:norm].each do |move|
-      curr = [origin[0] + move[0], origin[1] + move[1]]
-      # binding.pry if curr == [3, 5]
+    move_list.each do |move|
+      curr = sum_move.call(origin, move)
       norm << curr unless atlas[curr].key?(:piece)
     end
     norm
   end
 
   # adds valid capture moves
-  def capture_moves(capture, origin, atlas)
-    capture.each do |move|
-      # binding.pry unless atlas[[4, 0]][:piece].nil? && color == 'b'
-      curr = [origin[0] + move[0], origin[1] + move[1]]
-      if curr.all? { |coor| coor.between?(0, 7) }
-        if atlas.dig(curr, :piece).nil?
-          move
-        elsif atlas.dig(curr, :piece).color != color
-          @moves << curr
-        end
-      end
+  def add_capture_moves(sum_move, origin, atlas)
+    MOVES.dig(@color, :capture).each do |move|
+      curr = sum_move.call(origin, move)
+      @moves << curr if curr.all? { |coor| coor.between?(0, 7) } &&
+                        atlas.dig(curr, :piece) &&
+                        atlas.dig(curr, :piece).color != color
     end
   end
 end

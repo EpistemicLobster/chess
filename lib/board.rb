@@ -19,7 +19,7 @@ class Board
   def initiate_board
     @atlas = set_board
     generate_moves
-    atlas
+    @atlas
   end
 
   # Set the board with created piece objects
@@ -69,7 +69,7 @@ class Board
   def generate_moves
     @atlas.each do |key, value|
       # binding.pry
-      # binding.pry unless atlas[[4, 0]][:piece].nil?
+      # binding.pry unless atlas[[4, 0]][:piece].nil? && key != [6, 1]
       next if value[:piece].nil?
 
       value[:piece].generate_moves(key, @atlas.dup)
@@ -88,7 +88,7 @@ class Board
   end
 
   def target?(origin, target, color)
-    if atlas.dig(origin, :piece).moves.none?(target)
+    if @atlas.dig(origin, :piece).moves.none?(target)
       puts ERROR_PIECE_INVALID
       return false
     elsif check?(origin, target, color)
@@ -131,14 +131,14 @@ class Board
       next if value[:piece].nil? || value[:piece].color != color
 
       value[:piece].moves.any? do |move|
-        !check?(origin, move)
+        !check?(origin, move, color)
       end
     end
   end
 end
 
 
-hello = Board.new
+# hello = Board.new
 # hello.display
 # hello.make_move([6, 0], [4, 0])
 # hello.display
@@ -146,7 +146,7 @@ hello = Board.new
 # hello.display
 # hello.make_move([3, 0], [2, 0])
 # hello.display
-hello.check?([6, 0], [4, 0], 'w')
+# hello.check?([6, 0], [4, 0], 'w')
 # hello.display
 # binding.pry
 # hello.display

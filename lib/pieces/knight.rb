@@ -2,7 +2,7 @@
 class Knight
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9816 : 9822
+    @utf = color == 'white' ? 9816 : 9822
     @moves = []
   end
 
@@ -14,7 +14,6 @@ class Knight
     @moves = []
     norm_moves(origin)
     capture_moves(atlas)
-    self
   end
 
   def norm_moves(origin)

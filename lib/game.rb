@@ -8,8 +8,8 @@ class Game
   include Message
   def initialize
     @board = Board.new
-    @player_one = Player.new(1, 'w')
-    @player_two = Player.new(2, 'b')
+    @player_one = Player.new(1, 'white')
+    @player_two = Player.new(2, 'black')
     @current_player = @player_one
   end
 
@@ -18,8 +18,8 @@ class Game
   def main_loop
     i = 0
     # until @board.check_mate? == true
-    until i == 10
-      binding.pry
+    until i == 100
+      # binding.pry
       @board.display
       make_move
       @current_player = @current_player == @player_one ? @player_two : @player_one

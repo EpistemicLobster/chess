@@ -2,7 +2,7 @@
 class Queen
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9813 : 9819
+    @utf = color == 'white' ? 9813 : 9819
     @moves = []
   end
 
@@ -15,7 +15,6 @@ class Queen
     @moves = []
     norm_moves(origin, atlas)
     capture_moves(atlas)
-    self
   end
 
   def norm_moves(origin, atlas)

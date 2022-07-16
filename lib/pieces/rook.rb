@@ -2,7 +2,7 @@
 class Rook
   def initialize(color)
     @color = color
-    @utf = color == 'w' ? 9814 : 9820
+    @utf = color == 'white' ? 9814 : 9820
     @moves = []
   end
 
@@ -15,7 +15,6 @@ class Rook
     @moves = []
     norm_moves(origin, atlas)
     capture_moves(atlas)
-    self
   end
 
   def norm_moves(origin, atlas)
