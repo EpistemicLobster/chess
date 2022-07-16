@@ -1,23 +1,9 @@
+require_relative 'generic_piece'
 # Creates a rook
-class Rook
-  def initialize(color)
-    @color = color
-    @utf = color == 'white' ? 9814 : 9820
-    @moves = []
-  end
-
-  attr_reader :utf, :color
-  attr_accessor :moves
-
+class Rook < GenericPiece
   MOVES = [[1, 0], [0, 1], [-1, 0], [0, -1]].freeze
 
-  def generate_moves(origin, atlas)
-    @moves = []
-    norm_moves(origin, atlas)
-    capture_moves(atlas)
-  end
-
-  def norm_moves(origin, atlas)
+  def determine_standard_moves(origin, atlas)
     MOVES.each do |move|
       curr = origin
       loop do
@@ -27,16 +13,6 @@ class Rook
 
         @moves << curr
         break if atlas[curr][:piece]
-      end
-    end
-  end
-
-  def capture_moves(atlas)
-    @moves.keep_if do |move|
-      if atlas.dig(move, :piece).nil?
-        true
-      else
-        atlas.dig(move, :piece).color != color
       end
     end
   end

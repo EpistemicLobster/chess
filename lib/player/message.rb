@@ -7,7 +7,11 @@ module Message
   ERROR_SYNTAX = "Input Error! \n" \
                  "Use board notation to denote start & end positions.\n" \
                  'Examples: a2b3, h4h3, c1c5... etc: '.freeze
-  ERROR_PIECE_INVALID = 'Sorry that move is invalid, please try again: '.freeze
+  ERROR_MOVE_INVALID = 'Sorry that move is invalid, please try again: '.freeze
   ERROR_PLAYER_IN_CHECK = "Sorry that move is invalid, your King is in check.\n" \
                           'Please try again: '.freeze
+
+  def player_in_check(player)
+    "#{player}, you are in check."
+  end
 end

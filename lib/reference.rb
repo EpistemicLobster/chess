@@ -5,19 +5,16 @@ require_relative 'pieces/bishop'
 require_relative 'pieces/queen'
 require_relative 'pieces/king'
 
-#contains additional information methods/constants
+# contains additional information methods/constants
 module Reference
   SET = { 0 => ['b', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]],
           1 => ['b', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
           6 => ['w', [Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn, Pawn]],
           7 => ['w', [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]] }.freeze
 
-  CHESS_NOTATION = { 0 => 'a', 1 => 'b', 2 => 'c', 3 => 'd', 4 => 'e',
-                     5 => 'f', 6 => 'g', 7 => 'h'}
-
   SET_NEW = { [7, 0] => [Rook, 'white'], [7, 1] => [Knight, 'white'],
-              [7, 2] => [Bishop, 'white'], [7, 3] => [King, 'white'],
-              [7, 4] => [Queen, 'white'], [7, 5] => [Bishop, 'white'],
+              [7, 2] => [Bishop, 'white'], [7, 3] => [Queen, 'white'],
+              [7, 4] => [King, 'white'], [7, 5] => [Bishop, 'white'],
               [7, 6] => [Knight, 'white'], [7, 7] => [Rook, 'white'],
               [6, 0] => [Pawn, 'white'], [6, 1] => [Pawn, 'white'],
               [6, 2] => [Pawn, 'white'], [6, 3] =>  [Pawn, 'white'],
@@ -32,13 +29,17 @@ module Reference
               [1, 4] => [Pawn, 'black'], [1, 5] => [Pawn, 'black'],
               [1, 6] => [Pawn, 'black'], [1, 7] => [Pawn, 'black'] }.freeze
 
-  # For board.rb piece creation
-  PIECE = { Rook: Rook, Knight: Knight, Bishop: Bishop,
-            King: King, Queen: Queen, Pawn: Pawn }.freeze
+  UTF = { 'Rook' => [9814, 9820], 'Knight' => [9816, 9822], 
+          'Bishop' => [9815, 9821], 'Queen' => [9813, 9819],
+          'King' => [9812, 9818], 'Pawn' => [9817, 9823] }.freeze
 
-  MOVES = { Bishop => [[1, 1], [-1, 1], [-1, -1], [1, -1]],
-            Rook => [[1, 0], [0, 1], [-1, 0], [0, -1]],
-            Queen => [[1, 1], [-1, 1], [-1, -1], [1, -1],
-                      [1, 0], [0, 1], [-1, 0], [0, -1]] }.freeze
+#   # For board.rb piece creation
+#   PIECE = { Rook: Rook, Knight: Knight, Bishop: Bishop,
+#             King: King, Queen: Queen, Pawn: Pawn }.freeze
+
+#   MOVES = { Bishop => [[1, 1], [-1, 1], [-1, -1], [1, -1]],
+#             Rook => [[1, 0], [0, 1], [-1, 0], [0, -1]],
+#             Queen => [[1, 1], [-1, 1], [-1, -1], [1, -1],
+#                       [1, 0], [0, 1], [-1, 0], [0, -1]] }.freeze
 
 end

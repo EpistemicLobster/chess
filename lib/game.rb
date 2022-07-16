@@ -1,8 +1,7 @@
 require 'pry-byebug'
 require_relative 'board'
 require_relative 'player/player'
-# Game engine
-# Implement Rules between pieces, capture, check, check-mate, invalid
+
 # Implement General Game Loop
 class Game
   include Message
@@ -16,15 +15,13 @@ class Game
   attr_accessor :board, :player_one
 
   def main_loop
-    i = 0
-    # until @board.check_mate? == true
-    until i == 100
-      # binding.pry
+    until @board.check_mate == true
+      player_in_check(@current_player) if @board.check == true
       @board.display
       make_move
       @current_player = @current_player == @player_one ? @player_two : @player_one
-      i += 1
     end
+    puts "CHECK MATE!!! AHAA "
   end
 
   def make_move
