@@ -43,25 +43,57 @@ class Board
     if @atlas.dig(origin, :piece).moves.none?(target)
       puts ERROR_MOVE_INVALID
       return false
-    elsif check?(origin, target, color)
-      @check = true
-      @check_mate = check_mate?(origin, color)
+    elsif moves_into_check?(origin, target, color)
       puts ERROR_PLAYER_IN_CHECK
       return false
     end
-    @check = false
     true
   end
 
-  def check_mate?(origin, color)
+  # old check
+  # def check?
+  #   make_move(origin, target)
+  #   king_loc = find_piece(King, color).keys[0]
+  #   boolean = @atlas.any? do |_key, value|
+  #     next if value[:piece].nil?
+
+  #     value[:piece].moves.include?(king_loc)
+  #   end
+  #   make_move(target, origin)
+  #   boolean
+  # end
+
+  def moves_into_check?
+    make_move(origin, target)
+    boolean = check?(color)
+    make_move(target, origin)
+    boolean
+  end
+
+  def check?(color)
+    king_loc = find_piece(King, color).keys[0]
+    @atlas.any? do |_key, value|
+      next if value[:piece].nil?
+
+      value[:piece].moves.include?(king_loc)
+    end
+  end
+
+  def check_mate?(color)
     binding.pry
     @atlas.any? do |_key, value|
-      next if value[:piece].nil? || value[:piece].color == color
+      next if value[:piece].nil? || value[:piece].color != color
 
       value[:piece].moves.any? do |move|
-        !check?(origin, move, color)
+        !check?(color)
       end
     end
+  end
+
+  def game_end?(color)
+    if check?(color) == false && check_mate?(color) ==
+    end
+
   end
 
   # ORIGINAL
@@ -132,17 +164,7 @@ class Board
     end
   end
 
-  def check?(origin, target, color)
-    make_move(origin, target)
-    king_loc = find_piece(King, color).keys[0]
-    boolean = @atlas.any? do |_key, value|
-      next if value[:piece].nil?
 
-      value[:piece].moves.include?(king_loc)
-    end
-    make_move(target, origin)
-    boolean
-  end
 
   # untested
 

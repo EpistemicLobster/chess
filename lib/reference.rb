@@ -32,14 +32,4 @@ module Reference
   UTF = { 'Rook' => [9814, 9820], 'Knight' => [9816, 9822], 
           'Bishop' => [9815, 9821], 'Queen' => [9813, 9819],
           'King' => [9812, 9818], 'Pawn' => [9817, 9823] }.freeze
-
-#   # For board.rb piece creation
-#   PIECE = { Rook: Rook, Knight: Knight, Bishop: Bishop,
-#             King: King, Queen: Queen, Pawn: Pawn }.freeze
-
-#   MOVES = { Bishop => [[1, 1], [-1, 1], [-1, -1], [1, -1]],
-#             Rook => [[1, 0], [0, 1], [-1, 0], [0, -1]],
-#             Queen => [[1, 1], [-1, 1], [-1, -1], [1, -1],
-#                       [1, 0], [0, 1], [-1, 0], [0, -1]] }.freeze
-
 end

@@ -16,7 +16,7 @@ class Game
 
   def main_loop
     until @board.check_mate == true
-      player_in_check(@current_player) if @board.check == true
+      # player_in_check(@current_player) if @board.check == true
       @board.display
       make_move
       @current_player = @current_player == @player_one ? @player_two : @player_one
