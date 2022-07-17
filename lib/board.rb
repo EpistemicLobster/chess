@@ -8,20 +8,20 @@ class Board
   include Message
   def initialize
     @atlas = initiate_board
-    @check = false
-    @check_mate = false
   end
 
-  attr_accessor :atlas, :check, :check_mate
+  attr_accessor :atlas
 
   def display
-    table = load_display_table
+    table = Array.new(8) { Array.new(8) }
+    load_display_table(table)
     puts '  a b c d e f g h'
     table.each_with_index { |row, i| puts "#{8 - i} #{row.join(' ')} #{8 - i}" }
     puts '  a b c d e f g h'
   end
 
   def make_move(origin, target)
+    # binding.pry
     piece_copy = @atlas.dig(origin, :piece)
     @atlas[origin].delete(:piece)
     @atlas[target][:piece] = piece_copy
@@ -43,31 +43,11 @@ class Board
     if @atlas.dig(origin, :piece).moves.none?(target)
       puts ERROR_MOVE_INVALID
       return false
-    elsif moves_into_check?(origin, target, color)
+    elsif pseudo_move(origin, target) { check?(color) }
       puts ERROR_PLAYER_IN_CHECK
       return false
     end
     true
-  end
-
-  # old check
-  # def check?
-  #   make_move(origin, target)
-  #   king_loc = find_piece(King, color).keys[0]
-  #   boolean = @atlas.any? do |_key, value|
-  #     next if value[:piece].nil?
-
-  #     value[:piece].moves.include?(king_loc)
-  #   end
-  #   make_move(target, origin)
-  #   boolean
-  # end
-
-  def moves_into_check?
-    make_move(origin, target)
-    boolean = check?(color)
-    make_move(target, origin)
-    boolean
   end
 
   def check?(color)
@@ -80,33 +60,14 @@ class Board
   end
 
   def check_mate?(color)
-    binding.pry
-    @atlas.any? do |_key, value|
+    @atlas.any? do |key, value|
       next if value[:piece].nil? || value[:piece].color != color
 
       value[:piece].moves.any? do |move|
-        !check?(color)
+        pseudo_move(key, move) { check?(color) }
       end
     end
   end
-
-  def game_end?(color)
-    if check?(color) == false && check_mate?(color) ==
-    end
-
-  end
-
-  # ORIGINAL
-  # def check_mate?(origin, color)
-  #   @atlas.any? do |_key, value|
-  #     next if value[:piece].nil? || value[:piece].color != color
-
-  #     value[:piece].moves.any? do |move|
-  #       !check?(origin, move, color)
-  #     end
-  #   end
-  # end
-
 
   private
 
@@ -129,13 +90,18 @@ class Board
   def blank_board
     coordinates = Array.new(8) { |o| Array.new(8) { |i| [o, i] } }
     board = {}
-    coordinates.each do |row|
-      row.each { |cell| board[cell] = {} }
-    end
+    coordinates.each { |row| row.each { |cell| board[cell] = {} } }
     board.each_pair do |key, value|
       value[:icon] = key.reduce(:+).even? ? '♢' : '♦'
     end
     board
+  end
+
+  def pseudo_move(origin, target)
+    make_move(origin, target)
+    boolean = yield if block_given?
+    make_move(target, origin)
+    boolean
   end
 
   def generate_moves
@@ -146,16 +112,12 @@ class Board
     end
   end
 
-  def load_display_table
-    table = Array.new(8) { Array.new(8) }
+  def load_display_table(table)
     atlas.each do |key, value|
-      table[key[0]][key[1]] = if value[:piece].nil?
-                                value[:icon]
-                              else
-                                value[:piece].utf.chr(Encoding::UTF_8)
-                              end
+      next table[key[0]][key[1]] = value[:icon] if value[:piece].nil?
+
+      table[key[0]][key[1]] = value[:piece].utf.chr(Encoding::UTF_8)
     end
-    table
   end
 
   def find_piece(class_name, color)
@@ -163,23 +125,30 @@ class Board
       value[:piece].instance_of?(class_name) && value[:piece].color == color
     end
   end
-
-
-
-  # untested
-
-
 end
 
 
 hello = Board.new
 hello.display
-# hello.make_move([7, 3], [1, 5])
-binding.pry
+hello.pseudo_move([6, 6], [4, 6])
 hello.display
-p hello.check_mate?([7, 3], [1, 5], 'white')
-# hello.make_move([4, 0], [3, 0])
+hello.pseudo_move([6, 5], [4, 5])
+hello.display
+hello.pseudo_move([6, 4], [4, 4])
+hello.display
+hello.pseudo_move([6, 3], [4, 3])
+hello.display
 # hello.display
+# hello.make_move([7, 3], [1, 5])
+# hello.display
+# hello.make_move([1, 5], [3, 3])
+# hello.display
+# hello.make_move([7, 3], [1, 5])
+# # binding.pry
+# # hello.display
+# # p hello.check_mate?([7, 3], [1, 5], 'white')
+# hello.make_move([4, 0], [3, 0])
+# # hello.display
 # hello.make_move([3, 0], [2, 0])
 # hello.display
 # hello.check?([6, 0], [4, 0], 'w')

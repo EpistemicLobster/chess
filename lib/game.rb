@@ -10,18 +10,32 @@ class Game
     @player_one = Player.new(1, 'white')
     @player_two = Player.new(2, 'black')
     @current_player = @player_one
+    @check = false
+    @check_mate = false
   end
 
   attr_accessor :board, :player_one
 
   def main_loop
-    until @board.check_mate == true
-      # player_in_check(@current_player) if @board.check == true
+    loop do
+      update_check_status
+      break if game_over?
+
+      player_in_check(@current_player) if @check == true
       @board.display
       make_move
       @current_player = @current_player == @player_one ? @player_two : @player_one
     end
-    puts "CHECK MATE!!! AHAA "
+    game_over?
+  end
+
+  def update_check_status
+    @check = @board.check?(@current_player.color)
+    @check_mate = @board.check_mate?(@current_player.color)
+  end
+
+  def game_over?
+    (@check && @check_mate) || (!@check && @check_mate)
   end
 
   def make_move
