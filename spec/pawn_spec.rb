@@ -6,7 +6,6 @@ describe Pawn do
   subject(:atlas_double) { board.new }
   describe '#generate_moves' do
     context 'When origin is [3,2] ' do
-      
     end
   end
 

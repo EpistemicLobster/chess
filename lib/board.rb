@@ -1,6 +1,6 @@
 require 'pry-byebug'
 require_relative 'reference'
-require_relative 'player/message'
+require_relative 'message'
 
 # creates a chess board, with methods to display
 class Board
@@ -138,24 +138,3 @@ hello.pseudo_move([6, 4], [4, 4])
 hello.display
 hello.pseudo_move([6, 3], [4, 3])
 hello.display
-# hello.display
-# hello.make_move([7, 3], [1, 5])
-# hello.display
-# hello.make_move([1, 5], [3, 3])
-# hello.display
-# hello.make_move([7, 3], [1, 5])
-# # binding.pry
-# # hello.display
-# # p hello.check_mate?([7, 3], [1, 5], 'white')
-# hello.make_move([4, 0], [3, 0])
-# # hello.display
-# hello.make_move([3, 0], [2, 0])
-# hello.display
-# hello.check?([6, 0], [4, 0], 'w')
-# hello.display
-# binding.pry
-# hello.display
-# binding.pry
-# p hello.target?([6, 0], [5, 0], 'w')
-# binding.pry
-# hello.display

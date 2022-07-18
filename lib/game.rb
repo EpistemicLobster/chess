@@ -1,6 +1,6 @@
 require 'pry-byebug'
 require_relative 'board'
-require_relative 'player/player'
+require_relative 'player'
 
 # Implement General Game Loop
 class Game
@@ -13,8 +13,6 @@ class Game
     @check = false
     @check_mate = false
   end
-
-  attr_accessor :board, :player_one
 
   def main_loop
     loop do
@@ -78,9 +76,3 @@ end
 
 game = Game.new
 game.main_loop
-# game.board.make_move([6, 0], [4, 0])
-# game.board.display
-# game.board.make_move([4, 0], [3, 0])
-# game.board.display
-# game.board.make_move([3, 0], [2, 0])
-# game.board.display
