@@ -1,0 +1,14 @@
+--- !ruby/object:Sample
+board:
+  :a: alligator
+  :b: butterfly
+  :c: cheetah
+player_one: &1 !ruby/object:Player
+  name: Player 1
+  color: white
+player_two: !ruby/object:Player
+  name: Player 2
+  color: black
+current_player: *1
+check: peanut
+check_mate: black

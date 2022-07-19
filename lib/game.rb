@@ -4,6 +4,8 @@ require_relative 'player'
 
 # Implement General Game Loop
 class Game
+  # data base module for save game
+  include Database
   include Message
   def initialize
     @board = Board.new
@@ -34,6 +36,14 @@ class Game
 
   def game_over?
     (@check && @check_mate) || (!@check && @check_mate)
+  end
+
+  def save_list
+
+  end
+  
+  def save_game
+
   end
 
   def make_move
