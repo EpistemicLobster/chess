@@ -11,7 +11,14 @@ module Message
   ERROR_PLAYER_IN_CHECK = "Sorry that move is invalid, your King is in check.\n" \
                           'Please try again: '.freeze
 
+
   def player_in_check(player)
     "#{player}, you are in check."
+  end
+
+  def message_make_move(player)
+    puts "#{@current_player.name} please enter a coordinate" \
+    ' to make a move.' \
+    " You may also enter 'exit', to exit the game: "
   end
 end
