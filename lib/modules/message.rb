@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Messages on command line interface // Instructions
 module Message
   ERROR_EMPTY_SPACE = "Oh no! The starting space you selected is empty!\n" \

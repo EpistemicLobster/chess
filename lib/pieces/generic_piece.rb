@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # creates parent class for generic chess piece
 class GenericPiece
   def initialize(color)

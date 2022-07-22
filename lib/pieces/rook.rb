@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'generic_piece'
 # Creates a rook
 class Rook < GenericPiece
@@ -7,7 +9,6 @@ class Rook < GenericPiece
     MOVES.each do |move|
       curr = origin
       loop do
-        # binding.pry
         curr = [curr[0] + move[0], curr[1] + move[1]]
         break unless curr.all? { |coor| coor.between?(0, 7) }
 

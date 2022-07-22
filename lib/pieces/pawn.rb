@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'pry-byebug'
 require_relative 'generic_piece'
+
 # Creates a chess pawn
 class Pawn < GenericPiece
   def initialize(color)

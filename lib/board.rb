@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 require 'pry-byebug'
-require_relative 'reference'
+require_relative 'modules/reference'
 require_relative 'modules/message'
-require_relative 'modules/database1'
 
 # creates a chess board, with methods to display
 class Board
-  include Database
   include Reference
   include Message
   def initialize
@@ -128,19 +128,3 @@ class Board
     end
   end
 end
-
-
-# hello = Board.new
-
-# hello.save_game
-# hello = hello.load_game
-# binding.pry
-# hello.display
-# hello.pseudo_move([6, 6], [4, 6])
-# hello.display
-# hello.pseudo_move([6, 5], [4, 5])
-# hello.display
-# hello.pseudo_move([6, 4], [4, 4])
-# hello.display
-# hello.pseudo_move([6, 3], [4, 3])
-# hello.display

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Menu methods
-module Menu 
+module Menu
   def welcome_to_chess
     puts 'Welcome to chess!'
     puts 'Please choose an option from the menu to get started: '

@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require 'pry-byebug'
 require_relative 'board'
 require_relative 'player'
 require_relative 'modules/message'
-require_relative 'modules/database1'
+require_relative 'modules/database'
 require_relative 'modules/menu'
 
 # Implement General Game Loop
 class Game
-  # data base module for save game
   include Message
   include Menu
   include Database
+
   def initialize
     @board = Board.new
     @player_one = Player.new(1, 'white')
@@ -21,9 +23,29 @@ class Game
     @game_over = false
   end
 
+  attr_reader :board
+
   def welcome
     welcome_to_chess
     show_menu
+  end
+
+  def main_loop
+    loop do
+      update_check_status
+      break if game_over?
+
+      player_in_check(@current_player) if @check == true
+      make_move(play_or_exit)
+      @current_player = @current_player == @player_one ? @player_two : @player_one
+    end
+    conclude
+  end
+
+  def conclude; end
+
+  def game_over?
+    update_check_status
   end
 
   def exit
@@ -31,18 +53,6 @@ class Game
     puts "Enter 'Y' to save or 'N' to exit: "
     input = gets.chomp
     input.upcase == 'y' ? save_game : message_goodbye
-  end
-
-  def main_loop
-    @game_over = false
-    loop do
-      update_check_status
-      break if @game_over
-
-      player_in_check(@current_player) if @check == true
-      make_move(play_or_exit)
-      @current_player = @current_player == @player_one ? @player_two : @player_one
-    end
   end
 
   def play_or_exit
@@ -57,17 +67,13 @@ class Game
   def update_check_status
     @check = @board.check?(@current_player.color)
     @check_mate = @board.check_mate?(@current_player.color)
-    if (@check && @check_mate) || (!@check && @check_mate)
-      @game_over = true
-    end
+    (@check && @check_mate) || (!@check && @check_mate)
   end
 
   def make_move(input)
     move = verify(input)
     @board.make_move(move[0], move[1])
   end
-
-
 
   def notation(string)
     coor = string.chars
@@ -89,19 +95,6 @@ class Game
     end
     [a, b]
   end
-
-  # def verify(input)
-  #   a = nil
-  #   b = nil
-  #   c = @current_player.color
-  #   loop do
-  #     move = syntax_check(gets.chomp)
-  #     a = notation(move)[0]
-  #     b = notation(move)[1]
-  #     break if @board.origin?(a, c) && @board.target?(a, b, c)
-  #   end
-  #   [a, b]
-  # end
 
   def syntax_check(move)
     until move.match?(/^[a-h][1-8][a-h][1-8]$/)
